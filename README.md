@@ -1,2 +1,2 @@
-# AC21
+# Advent of Code 21
 My solutions to it
