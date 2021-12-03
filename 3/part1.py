@@ -1,3 +1,4 @@
+import copy
 
 data = open("input.txt", "r").read().splitlines()
 bits = [[0, 0] for i in range(len(data[0]))]
@@ -12,7 +13,7 @@ for line in data:
 gamma = ""
 
 print(bits)
-for i in range(len(bits)):
+for i in range(len(bits)-1):
     if bits[i][0] > bits[i][1]: gamma += "0"
     else:
         gamma += "1"
@@ -20,14 +21,38 @@ for i in range(len(bits)):
 print(gamma)
 
 epsilon = ""
-for i in range(len(bits)):
+for i in range(len(bits)-1):
     if bits[i][0] < bits[i][1]: epsilon += "0"
     else:
         epsilon += "1"
 
 print(epsilon)
 
-gammaDenary = int(gamma, 2)
-epsilonDenary = int(epsilon, 2)
-powerConsumption = gammaDenary * epsilonDenary
-print(powerConsumption)
+
+oxyData = copy.deepcopy(data)
+coData = copy.deepcopy(data)
+
+for i in range(len(gamma)-1):
+    indices = []
+    for d in range(len(oxyData)-1):
+        if oxyData[d][i] == gamma[i]:
+            print("match")
+        else:
+            indices.append(d)
+    for index in sorted(indices, reverse=True):
+        del oxyData[index]
+
+for i in range(len(epsilon)-1):
+    indices = []
+    for d in range(len(coData)-1):
+        if coData[d][i] == epsilon[i]:
+            print("match")
+        else:
+            indices.append(d)
+    for index in sorted(indices, reverse=True):
+        del coData[index]
+    print(coData)
+
+oxyRating = int(oxyData[0],2)
+coRating = int(coData[0],2)
+print(oxyRating*coRating)
