@@ -1,13 +1,10 @@
 def checkBingo(board):
     aRow, aColumn = False, False
+    columns = [[board[r][c] for r in range(len(board))] for c in range(len(board[0]))]  # sort columns into separate arrays
+
     for r in range(len(board)):
         aRow = board[r].count(board[r][0]) == len(board[r])
         if aRow: break
-
-    # sort columns into array
-    columns = []
-    for c in range(len(board[0])):
-        columns.append([board[r][c] for r in range(len(board))])
 
     for r in range(len(columns)):
         aColumn = columns[r].count(columns[r][0]) == len(columns[r])
@@ -30,37 +27,28 @@ for i in range(len(bingoData)):
     else: brd.append([c for c in bingoData[i].split(" ") if c != ""])
 
 forbiddenIndices, winningCallPos = [], [0 for i in range(len(boards))]
-winningPositions = [[0,0] for i in range(len(boards))]
+
 for i, numCalled in enumerate(numbersToCall):
     # apply bingo call to each board
     for it in range(len(boards)):
         if it not in forbiddenIndices:
-            matchPoses = []
             for r, _ in enumerate(boards[it]):
                 for c, _ in enumerate(boards[it][r]):
                     if boards[it][r][c] == str(numCalled):
                         boards[it][r][c] = "*"
                         winningCallPos[it] = i
-                        matchPoses.append([r,c])
-                        if it == 0:
-                            for b in boards[it]: print(b)
-                            print("\n")
-            # check board
-            bingo = checkBingo(boards[it])
-            if bingo:
-                forbiddenIndices.append(it)
-                winningPositions[it] = matchPoses[-1]
+            if checkBingo(boards[it]): forbiddenIndices.append(it) # check board - prevent it from winning again
 
-print(winningCallPos)
-lastToWinIndex = winningCallPos.index(max(winningCallPos))
-print("index of board last to win", lastToWinIndex)
-for b in boards[lastToWinIndex]: print(b)
+# output winning board details
+lastToWinIndex, lastToWinNumCalled = winningCallPos.index(max(winningCallPos)), numbersToCall[max(winningCallPos)]
+lastToWinBoard = boards[lastToWinIndex]
+for line in lastToWinBoard: print(line)
 
-wb = boards[lastToWinIndex]
-print(wb)
-
+# perform calculation to get score
 total = 0
-for r in range(len(wb)):
-    for c in range(len(wb[r])):
-        if wb[r][c] != "*": total += int(wb[r][c])
-print(total*numbersToCall[max(winningCallPos)])
+for r in range(len(lastToWinBoard)):
+    for c in range(len(lastToWinBoard[r])):
+        if lastToWinBoard[r][c] != "*": total += int(lastToWinBoard[r][c])
+
+fScore = total * lastToWinNumCalled
+print("final score", fScore)
